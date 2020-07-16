@@ -173,7 +173,7 @@ We could delegate this calculation to postgresql with the following query:
           ABS(taste.strawberry - tastes.strawberry) as dist4,
           ABS(taste.peach - tastes.peach) as dist5
         FROM taste, tastes
-        WHERE tastes.user_id != '#{id}'
+        WHERE tastes.user_id != 1
       )
       SELECT id, email, CAST((1-(dist1+dist2+dist3+dist4+dist5)/25.0)*100 AS float) as match_percentage
       FROM distances
@@ -181,7 +181,9 @@ We could delegate this calculation to postgresql with the following query:
       ORDER BY match_percentage DESC
       LIMIT 10
 ```
-*A little explanation required*
+*Query to retrieve the 10 best matches with the user whose id is 1.*
+
+#### A little explanation may be required
 
 Here SQL queyword `WITH` allow us to create two subqueries named `taste` and `distances`that we can use later in the query.
 - `taste` represents current user taste that we filter with `WHERE`keyword.
