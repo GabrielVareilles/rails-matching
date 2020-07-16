@@ -29,6 +29,8 @@ rails g model Taste apple:integer banana:integer orange:interger strawberry:inte
 Now lets create some fake users with random tastes, and we want a lot of them !
 So inside seeds.rb:
 
+(Warning depending on your machine this could take a while ! ~ 5 to 10 min)
+
 ```ruby
 puts "Clearing database.."
 User.destroy_all
@@ -169,34 +171,34 @@ Our ruby score method would be changed with:
 
 ```ruby
   def score(other_taste)
-    apple_distance = apple - other_taste.apple).abs
-    banana_distance = banana - other_taste.banana).abs
-    orange_distance = orange - other_taste.orange).abs
-    strawberry_distance = strawberry - other_taste.strawberry).abs
-    peach_distance = peach - other_taste.peach).abs
+    apple_distance = (apple - other_taste.apple).abs
+    banana_distance = (banana - other_taste.banana).abs
+    orange_distance = (orange - other_taste.orange).abs
+    strawberry_distance = (strawberry - other_taste.strawberry).abs
+    peach_distance = (peach - other_taste.peach).abs
 
-    apple_distance <= 2 ? apple_distance *= 0.50
-    apple_distance > 2 ? apple_distance *= 1.50
+    apple_distance *= 0.50 if apple_distance <= 2
+    apple_distance *= 1.50 if apple_distance > 2
 
-    banana_distance <= 2 ? banana_distance *= 0.50
-    banana_distance > 2 ? banana_distance *= 1.50
+    banana_distance *= 0.50 if banana_distance <= 2
+    banana_distance *= 1.50 if banana_distance > 2
 
-    orange_distance <= 2 ? orange_distance *= 0.50
-    orange_distance > 2 ? orange_distance *= 1.50
+    orange_distance *= 0.50 if orange_distance <= 2
+    orange_distance *= 1.50 if orange_distance > 2
 
-    strawberry_distance <= 2 ? strawberry_distance *= 0.50
-    strawberry_distance > 2 ? strawberry_distance *= 1.50
+    strawberry_distance *= 0.50 if strawberry_distance <= 2
+    strawberry_distance *= 1.50 if strawberry_distance > 2
 
-    peach_distance <= 2 ? peach_distance *= 0.50
-    peach_distance > 2 ? peach_distance *= 1.50
+    peach_distance *= 0.50 if peach_distance <= 2
+    peach_distance *= 1.50 if peach_distance > 2
 
-    return (
+    (
       (1 - (
             apple_distance +
             banana_distance +
             orange_distance +
-            strawberry.abs +
-            peach.abs
+            strawberry_distance.abs +
+            peach_distance.abs
           ) / 25.0
       ) * 100
     ).round
@@ -253,3 +255,31 @@ And the SQL version should be slightly modified (:fearful:)
 ```
 
 ## Performance Benchmark
+
+Using [Benchmark module from ruby](https://ruby-doc.org/stdlib-2.5.0/libdoc/benchmark/rdoc/Benchmark.html)
+we can compare the time taken by plain activerecord matching and pure sql.
+
+Lets code a class method in our User model:
+
+```ruby
+  def self.test_performance
+    Benchmark.bm do |x|
+      x.report { first.matches(10) }
+      x.report { first.matches_with_sql(10) }
+    end
+  end
+```
+
+Running this method in rails console gives us the following results:
+
+```
+[#<Benchmark::Tms:0x00007fd52a973180
+  @label="matching_with_ruby:",
+  @real=0.49463400058448315 ...>,
+ #<Benchmark::Tms:0x00007fd52a960fd0
+  @cstime=0.0,
+  @cutime=0.0,
+  @label="matching_with_sql:",
+  @real=0.017291000112891197 ..>]
+```
+So using our SQL query reduced the time from 494 ms to 17 ms (for 5k users!! :tada::tada:) 
