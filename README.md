@@ -189,7 +189,7 @@ We could delegate this calculation to postgresql with the following query:
 
 A little explanation:
 
-Here sql queyword `WITH` allow us to create two subqueries named `taste` and `distances`that we can use later in the query.
+Here SQL queyword `WITH` allow us to create two subqueries named `taste` and `distances`that we can use later in the query.
 - `taste` represents current user taste that we filter with `WHERE`keyword and interpolling user's id (#{id}).
 - `distances` computes individual distances between current user tastes and all other tastes records.
 And we use last `SELECT` to compute all matching percentages relative to current user.
