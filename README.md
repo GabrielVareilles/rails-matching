@@ -1,9 +1,11 @@
 # MATCHING USERS in Rails
 
 This tutorial will detail how to match users on multiple criterias.\
+We will only talk about backend.
+
 Lets say we want to match users on their fruits tastes :apple: :banana: :orange: :strawberry: :peach:
 
-Each user taste relative to a fruit will be from 0 to 5.
+Each user taste relative to a fruit will be an integer from 0 to 5 (this could also work with floats).
 
 ## Rails template
 Lets start with a [devise template](https://github.com/lewagon/rails-templates):
@@ -17,11 +19,11 @@ rails new \
 
 ## Database, Schema and Seeds
 
-Lets create a `Taste` model that will store fruits taste information.
-With a `1::N` relation between `User` and `Taste`:
+Lets create a `Taste` model that will store fruits taste information:
 
 ```ruby
 rails g model Taste apple:integer banana:integer orange:interger strawberry:integer peach:integer user:references
+rails db:migrate
 ```
 
 <img src="/app/assets/images/schema.png?raw=true" width="400">
@@ -50,29 +52,42 @@ puts "Creating users and tastes.."
     peach:      rand(0..5),
     user:       user
   )
+  puts "#{index} users created.." if index % 100 == 0
 end
 
 puts "All good"
 ```
+And run `rails db:seed`
 
 ## Matching logic
 
+### A little bit of theory
 Now how do we do to compare two user tastes ?
-Lets say we have Marie and John that filled a form with:
+Lets say we made Marie, John and Eddy fill a form with their tastes, and we got the following answers:
 
-Marie: :apple: 3 | :banana: 2 | :orange: 1 | :strawberry: 5 | :peach: 4
 
-John:  :apple: 1 | :banana: 4 | :orange: 3 | :strawberry: 4 | :peach: 5
+| User          | :apple:   | :banana: | :orange: |:strawberry:| :peach:  |
+| ------------- |:---------:|:--------:|:--------:|:----------:|:--------:|
+| Marie         | 3         | 2        |1         |5           |4         |
+| John          | 1         | 4        |3         |4           |5         |
+| Eddy          | 2         | 3        |0         |1           |3         |
 
 We will take `distances` between each particular tastes using absolute values, add them together and divide by the maximum distance.
-For instance here the :apple: distance between Marie and Paul is 2. 
-As distance has to be a positive value, we use absolute values.
 
-So the total distance is: 2 + 2 + 2 + 1 + 1 = 8
-Matching percentage will now be: (1 - (8/25)) * 100 => 68%
+For instance here the :apple: distance between Marie and Paul is 2 (3 - 1). 
+As distance has to be a positive value, we will use absolute values.
 
-Translated into ruby code we could have a method called score in `Taste` model that calculate the match percentage between two taste instances.
-So our Taste model file will look like:
+So the total distance between Marie and John is: 
+*2 + 2 + 2 + 1 + 1 = 8*
+
+Since we have 5 different tastes the maximum total distance is 25.
+
+Matching percentage will now be: 
+*(1 - (8/25)) * 100 => 68%*
+
+### Ruby code
+Translated into ruby code we could have a method called score in `Taste` model that calculates the match percentage between two taste instances.
+So our `Taste model` file will look like:
 
 ```ruby
 #taste.rb
@@ -95,7 +110,7 @@ class Taste < ApplicationRecord
 end
 ```
 
-Now to compare one particular user to all users from database we could use the following method in User model:
+Now to compare one particular user to all users from database we could use the following method in `User model`:
 
 ```ruby
 #user.rb
@@ -106,11 +121,11 @@ class User < ApplicationRecord
   ...
 
   def matches(top_n)
-    User.includes(:taste)                                # dealing with n+1 query..
-        .where.not(id: id)                               # all Users except current instance
+    User.includes(:taste)                                # Dealing with n+1 query..
+        .where.not(id: id)                               # All Users except current instance
         .map { |user| [user, taste.score(user.taste)] }  # Will look like [ [#<User.....>, 88], [#<User.....>, 60], .... ]
-        .sort_by { |pair| - pair[1] }                    # sorting by match percentage DESC
-        .first(top_n)                                    # limiting to the n top results
+        .sort_by { |pair| - pair[1] }                    # Sorting by match percentage DESC
+        .first(top_n)                                    # Limiting to the n top results
   end
   
   ...
@@ -125,9 +140,9 @@ Lets play a little in console trying to retrieve top 10 matches for the first us
 
 ## Better performance with SQL
 
-Now match calculation is made in pure ruby and this could cause performance issues when matching a growing number of users together.
+Now match calculation is made in pure ruby and this could cause performance issues when matching a very large number of users together.
 
-We could delegate this calculation to postgresql doing something like:
+We could delegate this calculation to postgresql with the following query:
 
 ```ruby
 #user.rb
@@ -163,11 +178,20 @@ We could delegate this calculation to postgresql doing something like:
   end
 ```
 
+A little explanation:
+
+Here sql queyword `WITH` allow us to create two subqueries named `taste` and `distances`that we can use later in the query.
+- `taste` represents current user taste that we filter with `WHERE`keyword and interpolling user's id (#{id}).
+- `distances` computes individual distances between current user tastes and all other tastes records.
+And we use last `SELECT` to compute all matching percentages relative to current user.
+
+
 ## Improving algorithm accuracy
 
 A way to improve our matching algorithm would be for instance to apply penalty when distance between two tastes is over 2 and decrease distance when it is equal or under 2.
-In other words lets multiply by 1.5 distances when over 2, and by 0.5 otherwise. 
-Our ruby score method would be changed with:
+In other words lets multiply by 1.5 distances when over 2, and by 0.5 otherwise.
+
+Our ruby score method would be modified:
 
 ```ruby
   def score(other_taste)
@@ -205,7 +229,7 @@ Our ruby score method would be changed with:
   end
 ```
 
-And the SQL version should be slightly modified (:fearful:)
+And the SQL version should be slightly modified using `CASE` `WHEN` statements (:fearful:)
 
 ```ruby
   def matches_with_sql(top_n)
@@ -257,7 +281,7 @@ And the SQL version should be slightly modified (:fearful:)
 ## Performance Benchmark
 
 Using [Benchmark module from ruby](https://ruby-doc.org/stdlib-2.5.0/libdoc/benchmark/rdoc/Benchmark.html)
-we can compare the time taken by plain activerecord matching and pure sql.
+We can compare the time taken by plain activerecord matching and pure sql.
 
 Lets code a class method in our User model:
 
@@ -280,4 +304,6 @@ Running this method in rails console gives us the following results:
   @label="matching_with_sql:",
   @real=0.017291000112891197 ..>]
 ```
-So using our SQL query reduced the time from 494 ms to 17 ms (for 5k users!! :tada::tada:) 
+So using our SQL query reduced the time from 494 ms to 17 ms (for 5k users!! :tada::tada:)
+
+Happy fruits (any other more relevent criterias) matching !
