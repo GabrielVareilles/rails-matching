@@ -72,18 +72,18 @@ Lets say we made Marie, John and Eddy fill a form with their tastes, and we got 
 | John          | 1         | 4        |3         |4           |5         |
 | Eddy          | 2         | 3        |0         |1           |3         |
 
-We will take `distances` between each particular tastes using absolute values, add them together and divide by the maximum distance.
+We will take **distances** between each particular tastes, add them together and divide by the **maximum total distance**.
 
 For instance here the :apple: distance between Marie and Paul is 2 (3 - 1). 
-As distance has to be a positive value, we will use absolute values.
+As distance has to be a positive value, we use absolute values.
 
-So the total distance between Marie and John is: 
+So the **total distance** between Marie and John is: 
 *2 + 2 + 2 + 1 + 1 = 8*
 
-Since we have 5 different tastes the maximum total distance is 25.
+Since we have 5 different tastes the **maximum total distance is 25**.
 
-Matching percentage will now be: 
-*(1 - (8/25)) * 100 => 68%*
+*Matching percentage* will now be: 
+*(1 - (8/25)) * 100 =>* **68 %**
 
 ### Ruby code
 Translated into ruby code we could have a method called score in `Taste` model that calculates the match percentage between two taste instances.
@@ -191,6 +191,7 @@ And we use last `SELECT` to compute all matching percentages relative to current
 A way to improve our matching algorithm would be for instance to apply penalty when distance between two tastes is over 2 and decrease distance when it is equal or under 2.
 In other words lets multiply by 1.5 distances when over 2, and by 0.5 otherwise.
 
+### Ruby
 Our ruby score method would be modified:
 
 ```ruby
@@ -229,6 +230,7 @@ Our ruby score method would be modified:
   end
 ```
 
+### SQL
 And the SQL version should be slightly modified using `CASE` `WHEN` statements (:fearful:)
 
 ```ruby
@@ -281,20 +283,20 @@ And the SQL version should be slightly modified using `CASE` `WHEN` statements (
 ## Performance Benchmark
 
 Using [Benchmark module from ruby](https://ruby-doc.org/stdlib-2.5.0/libdoc/benchmark/rdoc/Benchmark.html)
-We can compare the time taken by plain activerecord matching and pure sql.
+We can compare the time taken by plain ruby matching and sql.
 
 Lets code a class method in our User model:
 
 ```ruby
   def self.test_performance
     Benchmark.bm do |x|
-      x.report { first.matches(10) }
-      x.report { first.matches_with_sql(10) }
+      x.report("matching_with_ruby:") { first.matches(10) }
+      x.report("matching_with_sql:") { first.matches_with_sql(10) }
     end
   end
 ```
 
-Running this method in rails console gives us the following results:
+Running this method in `rails console gives` us the following results:
 
 ```
 [#<Benchmark::Tms:0x00007fd52a973180
@@ -304,6 +306,6 @@ Running this method in rails console gives us the following results:
   @label="matching_with_sql:",
   @real=0.017291000112891197 ..>]
 ```
-So using our SQL query reduced the time from 494 ms to 17 ms (for 5k users!! :tada::tada:)
+So using our SQL query reduced the time from *494 ms* to *17 ms*,  **30 times faster** :tada: :muscle: :tada:
 
-Happy fruits (any other more relevent criterias) matching !
+Happy fruits (or any other more relevant criteria) matching !
