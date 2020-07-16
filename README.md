@@ -10,7 +10,7 @@ Each user taste relative to a fruit will be an integer from 0 to 5 (this could a
 
 Now how do we do to compare two user tastes ?
 
-Lets say we made Marie, John and Eddy fill a form with their tastes, and we got the following answers:
+We made Marie, John and Eddy fill a form with their tastes, and we got the following answers:
 
 
 | User          | :apple:   | :banana: | :orange: |:strawberry:| :peach:  |
@@ -19,7 +19,9 @@ Lets say we made Marie, John and Eddy fill a form with their tastes, and we got 
 | John          | 1         | 4        |3         |4           |5         |
 | Eddy          | 2         | 3        |0         |1           |3         |
 
+What could be the match percentage between Mary and John ?
 
+Answer is simple enough to be part of Fullstack ruby challenges.
 We will take **distances** between each particular tastes, add them together and divide by the **maximum total distance**.
 
 ### Example
@@ -60,7 +62,7 @@ Lets create a `Taste` model that will store fruits taste information:
 rails g model Taste apple:integer banana:integer orange:interger strawberry:integer peach:integer user:references
 rails db:migrate
 ```
-Now lets create some fake users with random tastes, and we want a lot of them !
+Now let's seed our databse with fake users and random tastes, and we want a lot of them !
 So inside seeds.rb:
 
 ```ruby
@@ -89,7 +91,8 @@ puts "All good"
 ```
 And run `rails db:seed`
 
-(Warning depending on your machine this could take a while ! ~ 5 to 10 min => :coffee:)
+(Warning depending on your machine this could take a while ! ~ 5 to 10 min => :coffee: or feel free to change 5000 to any other smaller number)
+
 ## Matching logic in ruby
 
 Let's translate our algorithm into ruby code.
