@@ -155,12 +155,46 @@ Type in : `User.first.matches(10)`
 ## Better performance with SQL
 
 Now match calculation is made in pure ruby and this could cause performance issues when matching a very large number of users together.
-
+### Query
 We could delegate this calculation to postgresql with the following query:
+
+```SQL
+      WITH taste as (
+        SELECT apple, banana, orange, strawberry, peach
+        FROM tastes WHERE user_id = 1
+        ORDER BY id DESC LIMIT 1
+      )
+      , distances as (
+        SELECT
+          tastes.user_id,
+          ABS(taste.apple - tastes.apple) as dist1,
+          ABS(taste.banana - tastes.banana) as dist2,
+          ABS(taste.orange - tastes.orange) as dist3,
+          ABS(taste.strawberry - tastes.strawberry) as dist4,
+          ABS(taste.peach - tastes.peach) as dist5
+        FROM taste, tastes
+        WHERE tastes.user_id != '#{id}'
+      )
+      SELECT id, email, CAST((1-(dist1+dist2+dist3+dist4+dist5)/25.0)*100 AS float) as match_percentage
+      FROM distances
+      JOIN users ON users.id = distances.user_id
+      ORDER BY match_percentage DESC
+      LIMIT 10
+```
+*A little explanation required*
+
+Here SQL queyword `WITH` allow us to create two subqueries named `taste` and `distances`that we can use later in the query.
+- `taste` represents current user taste that we filter with `WHERE`keyword.
+- `distances` computes individual distances between current user tastes and all other tastes records.\
+And we use last `SELECT` to compute all matching percentages relative to current user.
+
+### Usage in user model
+
+It is possible to play SQL queries directly on database with `ActiveRecord::Base.connection.execute(query)`.
 
 ```ruby
 #user.rb
-
+'
   def matches_with_sql(top_n)
     query = <<-SQL
       WITH taste as (
@@ -188,17 +222,11 @@ We could delegate this calculation to postgresql with the following query:
 
     ActiveRecord::Base.connection.execute(query)
                       .to_a
-                      .map { |attr| [User.new(attr.except("match_percentage")), attr["match_percentage"]] }
+                      .map { |result| [User.new(result.except("match_percentage")), result["match_percentage"]] }
   end
 ```
 
-A little explanation:
-
-Here SQL queyword `WITH` allow us to create two subqueries named `taste` and `distances`that we can use later in the query.
-- `taste` represents current user taste that we filter with `WHERE`keyword and interpolling user's id (#{id}).
-- `distances` computes individual distances between current user tastes and all other tastes records.\
-And we use last `SELECT` to compute all matching percentages relative to current user.
-
+We can find same result as before using a `map` and building user instances with result from database.
 
 ## Improving algorithm accuracy
 
