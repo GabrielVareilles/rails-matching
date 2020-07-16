@@ -277,8 +277,6 @@ Running this method in rails console gives us the following results:
   @label="matching_with_ruby:",
   @real=0.49463400058448315 ...>,
  #<Benchmark::Tms:0x00007fd52a960fd0
-  @cstime=0.0,
-  @cutime=0.0,
   @label="matching_with_sql:",
   @real=0.017291000112891197 ..>]
 ```
