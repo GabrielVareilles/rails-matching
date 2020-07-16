@@ -47,6 +47,10 @@ rails new \
   -m https://raw.githubusercontent.com/lewagon/rails-templates/master/devise.rb \
   rails-matching
 ```
+## Schema
+
+For storing tastes score we will need a tastes table.
+<img src="/app/assets/images/schema.png?raw=true" width="400">
 
 ## Models and Seeds
 
@@ -56,9 +60,6 @@ Lets create a `Taste` model that will store fruits taste information:
 rails g model Taste apple:integer banana:integer orange:interger strawberry:integer peach:integer user:references
 rails db:migrate
 ```
-
-<img src="/app/assets/images/schema.png?raw=true" width="400">
-
 Now lets create some fake users with random tastes, and we want a lot of them !
 So inside seeds.rb:
 
