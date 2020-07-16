@@ -3,33 +3,38 @@
 This tutorial will detail how to match users on multiple criterias.\
 We will only talk about backend.
 
-Lets say we want to match users on their fruits tastes :apple: :banana: :orange: :strawberry: :peach:
+Lets say we want to match users on their fruits tastes :apple: :banana: :orange: :strawberry: :peach:.
 
 Each user taste relative to a fruit will be an integer from 0 to 5 (this could also work with floats).
 
 ## Matching algorithm 
 
 Now how do we do to compare two user tastes ?
+
 Lets say we made Marie, John and Eddy fill a form with their tastes, and we got the following answers:
 
 
 | User          | :apple:   | :banana: | :orange: |:strawberry:| :peach:  |
 | ------------- |:---------:|:--------:|:--------:|:----------:|:--------:|
-| Marie         | 3         | 2        |1         |5           |4         |
+| Mary         | 3         | 2        |1         |5           |4         |
 | John          | 1         | 4        |3         |4           |5         |
 | Eddy          | 2         | 3        |0         |1           |3         |
 
+
 We will take **distances** between each particular tastes, add them together and divide by the **maximum total distance**.
 
-For instance here the :apple: distance between Marie and Paul is 2 (3 - 1). 
-As distance has to be a positive value, we use absolute values.
+### Example
+
+For instance here the :apple: distance between Marie and Paul is 2 (3 - 1).
+
+*As distance has to be a positive value, we use absolute values.*
 
 So the **total distance** between Marie and John is: 
 *2 + 2 + 2 + 1 + 1 = 8*
 
 Since we have 5 different tastes the **maximum total distance is 25**.
 
-*Matching percentage* will now be: 
+**Matching percentage** between Mary and John will now be: 
 *(1 - (8/25)) * 100 =>* **68 %**
 
 Now lets code !
@@ -58,8 +63,6 @@ rails db:migrate
 Now lets create some fake users with random tastes, and we want a lot of them !
 So inside seeds.rb:
 
-(Warning depending on your machine this could take a while ! ~ 5 to 10 min)
-
 ```ruby
 puts "Clearing database.."
 User.destroy_all
@@ -86,6 +89,7 @@ puts "All good"
 ```
 And run `rails db:seed`
 
+(Warning depending on your machine this could take a while ! ~ 5 to 10 min => :coffee:)
 ## Matching logic in ruby
 
 Let's translate our algorithm into ruby code.
