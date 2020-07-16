@@ -1,10 +1,9 @@
 # MATCHING USERS in Rails
 
 This tutorial will detail how to match users on multiple criterias.\
-We will only talk about backend.
+We will only talk about backend logic without implementing controllers or views.
 
-Lets say we want to match users on their fruits tastes :apple: :banana: :orange: :strawberry: :peach:.
-
+Lets say we want to match users on their fruits tastes :apple: :banana: :orange: :strawberry: :peach:.\
 Each user taste relative to a fruit will be an integer from 0 to 5 (this could also work with floats).
 
 ## Matching algorithm 
@@ -142,10 +141,11 @@ class User < ApplicationRecord
 end  
 ```
 
-Lets play a little in console trying to retrieve top 10 matches for the first user:
+Lets play a little in `rails console` trying to retrieve top 10 matches for the first user:
 
-<img src="/app/assets/images/console-1.png?raw=true" width="800">
-<img src="/app/assets/images/console-2.png?raw=true" width="800">
+> Type in : User.first.matches(10)
+
+<img src="/app/assets/images/console-2.png?raw=true" width="1200">
 
 ## Better performance with SQL
 
@@ -315,6 +315,6 @@ Running this method in `rails console gives` us the following results:
   @label="matching_with_sql:",
   @real=0.017291000112891197 ..>]
 ```
-So using our SQL query reduced the time from *494 ms* to *17 ms*,  **30 times faster** :tada: :muscle: :tada:
+So using our SQL query reduced the time from **494 ms** to **17 ms**,  => ~ **30 times faster** :muscle:
 
-Happy fruits (or any other more relevant criteria) matching !
+Happy fruits (or any other more relevant criteria) matching ! :tada: :tada: 
