@@ -7,6 +7,33 @@ Lets say we want to match users on their fruits tastes :apple: :banana: :orange:
 
 Each user taste relative to a fruit will be an integer from 0 to 5 (this could also work with floats).
 
+## Matching algorithm 
+
+Now how do we do to compare two user tastes ?
+Lets say we made Marie, John and Eddy fill a form with their tastes, and we got the following answers:
+
+
+| User          | :apple:   | :banana: | :orange: |:strawberry:| :peach:  |
+| ------------- |:---------:|:--------:|:--------:|:----------:|:--------:|
+| Marie         | 3         | 2        |1         |5           |4         |
+| John          | 1         | 4        |3         |4           |5         |
+| Eddy          | 2         | 3        |0         |1           |3         |
+
+We will take **distances** between each particular tastes, add them together and divide by the **maximum total distance**.
+
+For instance here the :apple: distance between Marie and Paul is 2 (3 - 1). 
+As distance has to be a positive value, we use absolute values.
+
+So the **total distance** between Marie and John is: 
+*2 + 2 + 2 + 1 + 1 = 8*
+
+Since we have 5 different tastes the **maximum total distance is 25**.
+
+*Matching percentage* will now be: 
+*(1 - (8/25)) * 100 =>* **68 %**
+
+Now lets code !
+
 ## Rails template
 Lets start with a [devise template](https://github.com/lewagon/rails-templates):
 
@@ -17,7 +44,7 @@ rails new \
   rails-matching
 ```
 
-## Database, Schema and Seeds
+## Models and Seeds
 
 Lets create a `Taste` model that will store fruits taste information:
 
@@ -59,35 +86,13 @@ puts "All good"
 ```
 And run `rails db:seed`
 
-## Matching logic
+## Matching logic in ruby
 
-### A little bit of theory
-Now how do we do to compare two user tastes ?
-Lets say we made Marie, John and Eddy fill a form with their tastes, and we got the following answers:
+Let's translate our algorithm into ruby code.
 
-
-| User          | :apple:   | :banana: | :orange: |:strawberry:| :peach:  |
-| ------------- |:---------:|:--------:|:--------:|:----------:|:--------:|
-| Marie         | 3         | 2        |1         |5           |4         |
-| John          | 1         | 4        |3         |4           |5         |
-| Eddy          | 2         | 3        |0         |1           |3         |
-
-We will take **distances** between each particular tastes, add them together and divide by the **maximum total distance**.
-
-For instance here the :apple: distance between Marie and Paul is 2 (3 - 1). 
-As distance has to be a positive value, we use absolute values.
-
-So the **total distance** between Marie and John is: 
-*2 + 2 + 2 + 1 + 1 = 8*
-
-Since we have 5 different tastes the **maximum total distance is 25**.
-
-*Matching percentage* will now be: 
-*(1 - (8/25)) * 100 =>* **68 %**
-
-### Ruby code
-Translated into ruby code we could have a method called score in `Taste` model that calculates the match percentage between two taste instances.
-So our `Taste model` file will look like:
+We could have a method called score in `Taste` model that calculates the match percentage between two taste instances.
+Translated into ruby code We could have a method called score in `Taste` model that calculates the match percentage between two taste instances.
+So our `Taste` model file will look like:
 
 ```ruby
 #taste.rb
