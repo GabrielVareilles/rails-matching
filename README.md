@@ -52,6 +52,7 @@ rails new \
 ## Schema
 
 For storing tastes score we will need a tastes table.
+
 <img src="/app/assets/images/schema.png?raw=true" width="400">
 
 ## Models and Seeds
@@ -147,7 +148,7 @@ end
 
 Lets play a little in `rails console` trying to retrieve top 10 matches for the first user:
 
-> Type in : User.first.matches(10)
+Type in : `User.first.matches(10)`
 
 <img src="/app/assets/images/console-2.png?raw=true" width="1200">
 
@@ -201,7 +202,9 @@ And we use last `SELECT` to compute all matching percentages relative to current
 
 ## Improving algorithm accuracy
 
-A way to improve our matching algorithm would be for instance to apply penalty when distance between two tastes is over 2 and decrease distance when it is equal or under 2.
+One way to improve our algorithm could be to apply an arbitrary penalty when the relative distance on a criterion is greater than 2.\
+In the same way we can apply a bonus if distance is equal or lower than 2.\
+
 In other words lets multiply by 1.5 distances when over 2, and by 0.5 otherwise.
 
 ### Ruby
