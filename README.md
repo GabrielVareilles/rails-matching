@@ -2,7 +2,6 @@
 
 This tutorial will detail how to match users on multiple criterias.
 
-
 ## Matching algorithm 
 
 Lets say we want to match users on their fruits tastes :apple: :banana: :orange: :strawberry: :peach:.\
@@ -10,7 +9,7 @@ Each user taste relative to a fruit will be an integer from 0 to 5.
 
 ### Example
 
-We made Marie, John and Eddy fill a form with their tastes, and we got the following answers:
+We made Mary, John and Eddy fill a form with their tastes, and we got the following answers:
 
 | User          | :apple:   | :banana: | :orange: |:strawberry:| :peach:  |
 | ------------- |:---------:|:--------:|:--------:|:----------:|:--------:|
