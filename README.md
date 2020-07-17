@@ -157,7 +157,6 @@ We could delegate this calculation to the database with the following query:
       WITH taste as (
         SELECT apple, banana, orange, strawberry, peach
         FROM tastes WHERE user_id = 1
-        ORDER BY id DESC LIMIT 1
       )
       , distances as (
         SELECT
