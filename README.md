@@ -1,12 +1,12 @@
 # MATCHING USERS in Rails
 
-This tutorial will detail how to match users on multiple criterias.\
-We will only talk about backend logic without implementing controllers or views.
+This tutorial will detail how to match users on multiple criterias.
+
+
+## Matching algorithm 
 
 Lets say we want to match users on their fruits tastes :apple: :banana: :orange: :strawberry: :peach:.\
 Each user taste relative to a fruit will be an integer from 0 to 5 (this could also work with floats).
-
-## Matching algorithm 
 
 Now how do we do to compare two user tastes ?
 
@@ -26,17 +26,19 @@ We will take **distances** between each particular tastes, add them together and
 
 ### Example
 
-For instance here the :apple: distance between Mary and John is 2 (3 - 1).
+Match precentage between Mary and John:
 
-*As distance has to be a positive value, we use absolute values.*
+```
+The apple distance between Mary and John is 2 (3 - 1).
+As distances have to be positive values, we use absolute values.
 
-So the **total distance** between Mary and John is: 
-*2 + 2 + 2 + 1 + 1 = 8*
+So the total distance between Mary and John is: 
+2 + 2 + 2 + 1 + 1 = 8
 
-Since we have 5 different tastes the **maximum total distance is 25**.
-
-**Matching percentage** between Mary and John will now be: 
-*(1 - (8/25)) * 100 =>* **68 %**
+Since we have 5 different tastes (from 0 to 5) the maximum total distance is 25.
+ 
+(1 - (8/25)) * 100 => 68 %
+```
 
 Now lets code !
 
@@ -98,8 +100,7 @@ And run `rails db:seed`
 
 Let's translate our algorithm into ruby code.
 
-We could have a method called score in `Taste` model that calculates the match percentage between two taste instances.
-Translated into ruby code We could have a method called score in `Taste` model that calculates the match percentage between two taste instances.
+We could use a score method in `Taste` model that calculates the match percentage between two taste instances.
 So our `Taste` model file will look like:
 
 ```ruby
@@ -123,7 +124,7 @@ class Taste < ApplicationRecord
 end
 ```
 
-Now to compare one particular user to all users from database we could use the following method in `User model`:
+Now to compare one particular user to all users from database, and retrieve for instance the top ten matches we could use the following method in `User` model:
 
 ```ruby
 #user.rb
@@ -146,7 +147,7 @@ class User < ApplicationRecord
 end  
 ```
 
-Lets play a little in `rails console` trying to retrieve top 10 matches for the first user:
+Let's crash test it in `rails console`:
 
 Type in : `User.first.matches(10)`
 
@@ -154,9 +155,10 @@ Type in : `User.first.matches(10)`
 
 ## Better performance with SQL
 
-Now match calculation is made in pure ruby and this could cause performance issues when matching a very large number of users together.
+Matching a very large number of users together could cause some performance issues.
+
 ### Query
-We could delegate this calculation to postgresql with the following query:
+We could delegate this calculation to the database with the following query:
 
 ```SQL
       WITH taste as (
@@ -186,13 +188,13 @@ We could delegate this calculation to postgresql with the following query:
 #### A little explanation may be required
 
 Here SQL queyword `WITH` allow us to create two subqueries named `taste` and `distances`that we can use later in the query.
-- `taste` represents current user taste that we filter with `WHERE`keyword.
-- `distances` computes individual distances between current user tastes and all other tastes records.\
-And we use last `SELECT` to compute all matching percentages relative to current user.
+- `taste` represents current user taste that we filter with `WHERE` keyword.
+- `distances` computes individual fruit distances between current user tastes and all other tastes records.
+And we use last `SELECT` to compute all matching percentages.
 
 ### Usage in user model
 
-It is possible to play SQL queries directly on database with `ActiveRecord::Base.connection.execute(query)`.
+It is possible to play SQL queries directly on database using `ActiveRecord::Base.connection.execute(query)`.
 
 ```ruby
 #user.rb
@@ -228,14 +230,14 @@ It is possible to play SQL queries directly on database with `ActiveRecord::Base
   end
 ```
 
-We can find same result as before using a `map` and building user instances with result from database.
+We can compute the same result as before using results from the database.
 
-## Improving algorithm accuracy
+## Improving our algorithm accuracy
 
-One way to improve our algorithm could be to apply an arbitrary penalty when the relative distance on a criterion is greater than 2.\
-In the same way we can apply a bonus if distance is equal or lower than 2.\
+One way to improve our algorithm could be to apply an arbitrary penalty when the relative distance on a criterion is greater than 2.
+In the same way we can apply a bonus if distance is equal or lower than 2.
 
-In other words lets multiply by 1.5 distances when over 2, and by 0.5 otherwise.
+In other words, when over 2, lets multiply distances by 1.5, and by 0.5 otherwise.
 
 ### Ruby
 Our ruby score method would be modified:
@@ -277,7 +279,7 @@ Our ruby score method would be modified:
 ```
 
 ### SQL
-And the SQL version should be slightly modified using `CASE` `WHEN` statements (:fearful:)
+And the SQL version should be slightly modified using `CASE` `WHEN` statements :fearful:
 
 ```ruby
   def matches_with_sql(top_n)
@@ -331,7 +333,7 @@ And the SQL version should be slightly modified using `CASE` `WHEN` statements (
 Using [Benchmark module from ruby](https://ruby-doc.org/stdlib-2.5.0/libdoc/benchmark/rdoc/Benchmark.html)
 We can compare the time taken by plain ruby matching and sql.
 
-Lets code a class method in our User model:
+Let's code a class method in our User model:
 
 ```ruby
   def self.test_performance
@@ -352,6 +354,6 @@ Running this method in `rails console gives` us the following results:
   @label="matching_with_sql:",
   @real=0.017291000112891197 ..>]
 ```
-So using our SQL query reduced the time from **494 ms** to **17 ms**,  => ~ **30 times faster** :muscle:
+SQL query reduced the time from **494 ms** to **17 ms**,  => ~ **30 times faster** :muscle:
 
 Happy fruits (or any other more relevant criteria) matching ! :tada: :tada: 
