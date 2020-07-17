@@ -273,7 +273,7 @@ Our ruby score method would be modified:
 ```
 
 ### SQL
-And the SQL version should be slightly modified using `CASE` `WHEN` statements :fearful:
+And the SQL version should be slightly :fearful: modified using `CASE` `WHEN` statements.
 
 ```ruby
   def matches_with_sql(top_n)
