@@ -6,12 +6,11 @@ This tutorial will detail how to match users on multiple criterias.
 ## Matching algorithm 
 
 Lets say we want to match users on their fruits tastes :apple: :banana: :orange: :strawberry: :peach:.\
-Each user taste relative to a fruit will be an integer from 0 to 5 (this could also work with floats).
+Each user taste relative to a fruit will be an integer from 0 to 5.
 
-Now how do we do to compare two user tastes ?
+### Example
 
 We made Marie, John and Eddy fill a form with their tastes, and we got the following answers:
-
 
 | User          | :apple:   | :banana: | :orange: |:strawberry:| :peach:  |
 | ------------- |:---------:|:--------:|:--------:|:----------:|:--------:|
@@ -23,10 +22,6 @@ What could be the match percentage between Mary and John ?
 
 Answer is simple enough to be part of Fullstack ruby challenges.
 We will take **distances** between each particular tastes, add them together and divide by the **maximum total distance**.
-
-### Example
-
-Match precentage between Mary and John:
 
 ```
 The apple distance between Mary and John is 2 (3 - 1).
@@ -40,7 +35,7 @@ Since we have 5 different tastes (from 0 to 5) the maximum total distance is 25.
 (1 - (8/25)) * 100 => 68 %
 ```
 
-Now lets code !
+Time to code !
 
 ## Rails template
 Lets start with a [devise template](https://github.com/lewagon/rails-templates):
@@ -53,13 +48,11 @@ rails new \
 ```
 ## Schema
 
-For storing tastes score we will need a tastes table.
-
 <img src="/app/assets/images/schema.png?raw=true" width="400">
 
 ## Models and Seeds
 
-Lets create a `Taste` model that will store fruits taste information:
+Create a `Taste` model that will store fruits taste information:
 
 ```ruby
 rails g model Taste apple:integer banana:integer orange:interger strawberry:integer peach:integer user:references
@@ -347,13 +340,11 @@ Let's code a class method in our User model:
 Running this method in `rails console gives` us the following results:
 
 ```
-[#<Benchmark::Tms:0x00007fd52a973180
-  @label="matching_with_ruby:",
-  @real=0.49463400058448315 ...>,
- #<Benchmark::Tms:0x00007fd52a960fd0
-  @label="matching_with_sql:",
-  @real=0.017291000112891197 ..>]
+                           user     system      total        real
+matching_with_ruby:      0.340416   0.005283   0.345700 (  0.366541)                                                          
+matching_with_sql:       0.001510   0.000200   0.001710 (  0.016998)
+
 ```
-SQL query reduced the time from **494 ms** to **17 ms**,  => ~ **30 times faster** :muscle:
+SQL query reduced the time from **366 ms** to **17 ms**,  => ~ **20 times faster** :muscle:
 
 Happy fruits (or any other more relevant criteria) matching ! :tada: :tada: 
