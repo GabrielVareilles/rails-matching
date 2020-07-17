@@ -26,11 +26,11 @@ We will take **distances** between each particular tastes, add them together and
 
 ### Example
 
-For instance here the :apple: distance between Marie and Paul is 2 (3 - 1).
+For instance here the :apple: distance between Mary and John is 2 (3 - 1).
 
 *As distance has to be a positive value, we use absolute values.*
 
-So the **total distance** between Marie and John is: 
+So the **total distance** between Mary and John is: 
 *2 + 2 + 2 + 1 + 1 = 8*
 
 Since we have 5 different tastes the **maximum total distance is 25**.
