@@ -340,10 +340,9 @@ Let's code a class method in our User model:
 Running this method in `rails console gives` us the following results:
 
 ```
-                           user     system      total        real
+                          user       system      total       real
 matching_with_ruby:      0.340416   0.005283   0.345700 (  0.366541)                                                          
 matching_with_sql:       0.001510   0.000200   0.001710 (  0.016998)
-
 ```
 SQL query reduced the time from **366 ms** to **17 ms**,  => ~ **20 times faster** :muscle:
 
