@@ -32,6 +32,7 @@ So the total distance between Mary and John is:
 
 Since we have 5 different tastes (from 0 to 5) the maximum total distance is 25.
  
+ Matching percentage:
 (1 - (8/25)) * 100 => 68 %
 ```
 
