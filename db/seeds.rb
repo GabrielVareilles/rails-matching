@@ -1,9 +1,10 @@
 puts "Clearing database.."
 User.destroy_all
 
-puts "Creating users with profile and criterias.."
+puts "Creating users with tastes.."
 
 5000.times do |index|
+
   user = User.create(
     email: "email-#{index}@taste.com",
     password: 'password'
@@ -16,6 +17,7 @@ puts "Creating users with profile and criterias.."
     peach:      rand(0..5),
     user:       user
   )
+  puts "#{index} user created.." if index % 100 == 0
 end
 
 puts "All good"
