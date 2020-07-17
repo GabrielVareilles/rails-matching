@@ -198,7 +198,6 @@ It is possible to play SQL queries directly on database using `ActiveRecord::Bas
       WITH taste as (
         SELECT apple, banana, orange, strawberry, peach
         FROM tastes WHERE user_id = '#{id}'
-        ORDER BY id DESC LIMIT 1
       )
       , distances as (
         SELECT
@@ -211,7 +210,7 @@ It is possible to play SQL queries directly on database using `ActiveRecord::Bas
         FROM taste, tastes
         WHERE tastes.user_id != '#{id}'
       )
-      SELECT id, email, CAST((1-(dist1+dist2+dist3+dist4+dist5)/25.0)*100 AS float) as match_percentage
+      SELECT users.id, email, CAST((1-(dist1+dist2+dist3+dist4+dist5)/25.0)*100 AS float) as match_percentage
       FROM distances
       JOIN users ON users.id = distances.user_id
       ORDER BY match_percentage DESC
@@ -281,7 +280,6 @@ And the SQL version should be slightly :fearful: modified using `CASE` `WHEN` st
       WITH taste as (
         SELECT apple, banana, orange, strawberry, peach
         FROM tastes WHERE user_id = '#{id}'
-        ORDER BY id DESC LIMIT 1
       )
       , distances as (
         SELECT
@@ -309,7 +307,7 @@ And the SQL version should be slightly :fearful: modified using `CASE` `WHEN` st
         FROM taste, tastes
         WHERE tastes.user_id != '#{id}'
       )
-      SELECT id, email, CAST((1-(dist1+dist2+dist3+dist4+dist5)/25.0)*100 AS float) as match_percentage
+      SELECT users.id, email, CAST((1-(dist1+dist2+dist3+dist4+dist5)/25.0)*100 AS float) as match_percentage
       FROM distances
       JOIN users ON users.id = distances.user_id
       ORDER BY match_percentage DESC
