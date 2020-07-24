@@ -176,7 +176,9 @@ Our ruby score method would be modified:
 ## Better performance with SQL
 
 Matching a very large number of users together could cause some performance issues.\
-We could delegate this calculation to the database with the following query:
+The matching percentage calculation is definitely what's costing us the most here.
+
+So we could delegate that calculation to the database with the following query:
 
 ```SQL
       WITH taste as (
@@ -331,5 +333,20 @@ matching_with_ruby:      0.340416   0.005283   0.345700 (  0.366541)
 matching_with_sql:       0.001510   0.000200   0.001710 (  0.016998)
 ```
 SQL query reduced the time from **366 ms** to **17 ms**,  => ~ **20 times faster** :muscle:
+
+## Going further
+
+This algorithm could works with many more criteria but indeed the code will grow accordingly.
+Applying weigths to our different criteria could also easily be done if necessary.
+
+Last but not least we're not tied to match records from the same table. (using polymorphism)
+In our above exemple we could have a salads and try to match users and fruit salads.
+
+<img src="/app/assets/images/schema-2.png?raw=true" width="400">
+
+
+
+
+
 
 Happy fruits (or any other more relevant criteria) matching ! :tada:
