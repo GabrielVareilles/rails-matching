@@ -87,7 +87,7 @@ puts "All good"
 ```
 And run `rails db:seed`
 
-## Matching logic in ruby (simple version)
+## Matching logic in ruby
 
 Let's translate our algorithm into ruby code.
 
@@ -172,8 +172,6 @@ Our ruby score method would be modified:
 ## Better performance with SQL
 
 Matching a very large number of users together could cause some performance issues.
-
-### Query (for the simple version)
 We could delegate this calculation to the database with the following query:
 
 ```SQL
@@ -200,14 +198,18 @@ We could delegate this calculation to the database with the following query:
 ```
 *Query to retrieve the 10 best matches with the user whose id is 1.*
 
-#### A little explanation may be required
-
 Here SQL queyword `WITH` allow us to create two subqueries named `taste` and `distances`that we can use later in the query.
 - `taste` represents current user taste that we filter with `WHERE` keyword.
 - `distances` computes individual fruit distances between current user tastes and all other tastes records.
 And we use last `SELECT` to compute all matching percentages.
 
-### Testing
+### Testing the query
+
+We can test this query directly on our database using the awesome [blazer gem](https://github.com/ankane/blazer).
+You can also find more infos in the DB advanced lecture on Kitt.
+
+
+
 ### Usage in user model
 
 It is possible to play SQL queries directly on database using `ActiveRecord::Base.connection.execute(query)`.
