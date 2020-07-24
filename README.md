@@ -5,7 +5,7 @@ This tutorial will detail how to match users on multiple criterias and how to im
 ## Matching algorithm
 
 Lets say we want to match users on their fruits tastes :apple: :banana: :orange: :strawberry: :peach:.\
-Each user taste relative to a fruit will be from 0 to 5.
+Each user taste relative to a fruit will be a number from 0 to 5.
 
 ### Example
 
@@ -62,6 +62,8 @@ Now let's seed our databse with fake users and random tastes.\
 So inside seeds.rb:
 
 ```ruby
+# db/seeds.rb
+
 puts "Clearing database.."
 User.destroy_all
 
@@ -95,7 +97,7 @@ We could use a score method in `Taste` model that calculates the match percentag
 So our `Taste` model file will look like:
 
 ```ruby
-#taste.rb
+# models/taste.rb
 
 class Taste < ApplicationRecord
   belongs_to :user
@@ -119,7 +121,8 @@ Now to compare one particular user to all users from database, and retrieve for 
 we could use the following method in `User` model:
 
 ```ruby
-#user.rb
+# models/user.rb
+
 class User < ApplicationRecord
   ...
   has_one :taste, dependent: :destroy
@@ -216,7 +219,8 @@ You can also find more infos about this gem in the DB advanced lecture on Kitt.
 It is possible to play SQL queries directly on database using `ActiveRecord::Base.connection.execute(query)`.
 
 ```ruby
-#user.rb
+# models/user.rb
+
   def matches_with_sql(top_n)
     query = <<-SQL
       WITH taste as (
@@ -253,7 +257,8 @@ We can compute the same result as before using results from the database.
 The SQL query for the advanced version should be slightly :fearful: modified using `CASE` `WHEN` statements.
 
 ```ruby
-#user.rb
+# models/user.rb
+
   def matches_with_sql(top_n)
     query = <<-SQL
       WITH taste as (
@@ -303,12 +308,13 @@ The SQL query for the advanced version should be slightly :fearful: modified usi
 
 Using [Benchmark module from ruby](https://ruby-doc.org/stdlib-2.5.0/libdoc/benchmark/rdoc/Benchmark.html)\
 We can compare the time taken by plain ruby matching and sql.\
-(Test is made with 5000 users)
+Test is made with 5000 users.
 
 Let's code a class method in our User model:
 
 ```ruby
-#user.rb
+# models/user.rb
+
   def self.test_performance
     Benchmark.bm do |x|
       x.report("matching_with_ruby:") { first.matches(10) }
