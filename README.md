@@ -1,4 +1,4 @@
-# MATCHING USERS in Rails [WIP]
+# MATCHING USERS in Rails
 
 This tutorial will detail how to match users on multiple criterias.
 
@@ -166,7 +166,7 @@ Our ruby score method would be modified:
     ].map { |distance| distance > 2 ? distance * 1.5 : distance * 0.5 }
      .sum
 
-    ((1 - (total_distance / 25.0) * 100).round(1)
+    ((1 - (total_distance / 25.0)) * 100).round(1)
   end
 ```
 
@@ -300,8 +300,8 @@ The SQL query for the advanced version should be slightly :fearful: modified usi
 
 ## Performance Benchmark
 
-Using [Benchmark module from ruby](https://ruby-doc.org/stdlib-2.5.0/libdoc/benchmark/rdoc/Benchmark.html)
-We can compare the time taken by plain ruby matching and sql.
+Using [Benchmark module from ruby](https://ruby-doc.org/stdlib-2.5.0/libdoc/benchmark/rdoc/Benchmark.html)\
+We can compare the time taken by plain ruby matching and sql.\
 (Test is made with 5000 users)
 
 Let's code a class method in our User model:
@@ -324,4 +324,4 @@ matching_with_sql:       0.001510   0.000200   0.001710 (  0.016998)
 ```
 SQL query reduced the time from **366 ms** to **17 ms**,  => ~ **20 times faster** :muscle:
 
-Happy fruits (or any other more relevant criteria) matching ! :tada: :tada: 
+Happy fruits (or any other more relevant criteria) matching ! :tada:
