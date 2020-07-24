@@ -326,8 +326,4 @@ matching_with_sql:       0.001510   0.000200   0.001710 (  0.016998)
 ```
 SQL query reduced the time from **366 ms** to **17 ms**,  => ~ **20 times faster** :muscle:
 
-<<<<<<< HEAD
-Happy fruits (or any other more relevant criteria) matching ! :tada: :tada:
-=======
 Happy fruits (or any other more relevant criteria) matching ! :tada:
->>>>>>> b1204c6ecadafcc39e2dc91bb244627e21e6386e
