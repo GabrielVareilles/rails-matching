@@ -71,11 +71,11 @@ ActiveRecord::Schema.define(version: 2020_07_15_144030) do
   end
 
   create_table "tastes", force: :cascade do |t|
-    t.integer "apple"
-    t.integer "banana"
-    t.integer "orange"
-    t.integer "strawberry"
-    t.integer "peach"
+    t.float "apple"
+    t.float "banana"
+    t.float "orange"
+    t.float "strawberry"
+    t.float "peach"
     t.bigint "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

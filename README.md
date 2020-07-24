@@ -2,7 +2,7 @@
 
 This tutorial will detail how to match users on multiple criterias.
 
-## Matching algorithm 
+## Matching algorithm
 
 Lets say we want to match users on their fruits tastes :apple: :banana: :orange: :strawberry: :peach:.\
 Each user taste relative to a fruit will be from 0 to 5.
@@ -26,11 +26,11 @@ We will take **distances** between each particular tastes, add them together and
 The apple distance between Mary and John is 1.9 (3.1 - 1.2).
 As distances have to be positive values, we use absolute values.
 
-So the total distance between Mary and John is: 
+So the total distance between Mary and John is:
 1.9 + 2.1 + 2.0 + 0.6 + 0.7 = 7.3
 
 Since we have 5 different tastes (from 0 to 5) the maximum total distance is 25.
- 
+
 Matching percentage:
 (1 - (7.3/25)) * 100 => 70.8 %
 ```
@@ -132,10 +132,10 @@ class User < ApplicationRecord
         .sort_by { |pair| - pair[1] }                    # sorting by match percentage DESC
         .first(top_n)                                    # limiting to the n top results
   end
-  
+
   ...
 
-end  
+end
 ```
 
 Let's crash test it in `rails console`:
@@ -165,7 +165,7 @@ Our ruby score method would be modified:
     ].map { |distance| distance > 2 ? distance * 1.5 : distance * 0.5 }
      .sum
 
-    ((1 - (total_distance / 25.0) * 100).round(1)
+    (1 - (total_distance / 25.0) * 100).round(1)
   end
 ```
 
@@ -214,7 +214,6 @@ It is possible to play SQL queries directly on database using `ActiveRecord::Bas
 
 ```ruby
 #user.rb
-'
   def matches_with_sql(top_n)
     query = <<-SQL
       WITH taste as (
@@ -251,6 +250,7 @@ We can compute the same result as before using results from the database.
 And the SQL version should be slightly :fearful: modified using `CASE` `WHEN` statements.
 
 ```ruby
+#user.rb
   def matches_with_sql(top_n)
     query = <<-SQL
       WITH taste as (
@@ -304,6 +304,7 @@ We can compare the time taken by plain ruby matching and sql.
 Let's code a class method in our User model:
 
 ```ruby
+#user.rb
   def self.test_performance
     Benchmark.bm do |x|
       x.report("matching_with_ruby:") { first.matches(10) }
@@ -316,9 +317,9 @@ Running this method in `rails console gives` us the following results:
 
 ```
                           user       system      total       real
-matching_with_ruby:      0.340416   0.005283   0.345700 (  0.366541)                                                          
+matching_with_ruby:      0.340416   0.005283   0.345700 (  0.366541)
 matching_with_sql:       0.001510   0.000200   0.001710 (  0.016998)
 ```
 SQL query reduced the time from **366 ms** to **17 ms**,  => ~ **20 times faster** :muscle:
 
-Happy fruits (or any other more relevant criteria) matching ! :tada: :tada: 
+Happy fruits (or any other more relevant criteria) matching ! :tada: :tada:

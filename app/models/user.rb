@@ -11,7 +11,7 @@ class User < ApplicationRecord
   def matches(top_n)
     User.includes(:taste)                                # dealing with n+1 query..
         .where.not(id: id)                               # all Users except current instance
-        .map { |user| [user, taste.score(user.taste)] }  # Will look like [ [#<User.....>, 88], [#<User.....>, 60], .... ]
+        .map { |user| [user, taste.score(user.taste)] }  # Will look like [[#<User.....>, 88.2], [#<User.....>, 60.1] ..]
         .sort_by { |pair| - pair[1] }                    # sorting by match percentage DESC
         .first(top_n)                                    # limiting to the n top results
   end
@@ -49,7 +49,7 @@ class User < ApplicationRecord
         FROM taste, tastes
         WHERE tastes.user_id != '#{id}'
       )
-      SELECT users.id, email, CAST((1-(dist1+dist2+dist3+dist4+dist5)/25.0)*100 AS float) as match_percentage
+      SELECT users.id, email, (1-(dist1+dist2+dist3+dist4+dist5)/25.0)*100 as match_percentage
       FROM distances
       JOIN users ON users.id = distances.user_id
       ORDER BY match_percentage DESC
@@ -80,7 +80,7 @@ class User < ApplicationRecord
   #       FROM taste, tastes
   #       WHERE tastes.user_id != '#{id}'
   #     )
-  #     SELECT id, email, CAST((1-(dist1+dist2+dist3+dist4+dist5)/25.0)*100 AS float) as match_percentage
+  #     SELECT id, email, (1-(dist1+dist2+dist3+dist4+dist5)/25.0)*100 as match_percentage
   #     FROM distances
   #     JOIN users ON users.id = distances.user_id
   #     ORDER BY match_percentage DESC
