@@ -1,4 +1,4 @@
-# MATCHING USERS in Rails
+# MATCHING USERS in Rails [WIP]
 
 This tutorial will detail how to match users on multiple criterias.
 
