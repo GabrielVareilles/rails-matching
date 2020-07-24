@@ -1,4 +1,4 @@
-# MATCHING USERS in Rails [WIP]
+# MATCHING USERS in Rails
 
 This tutorial will detail how to match users on multiple criterias.
 
@@ -19,7 +19,7 @@ We made Mary, John and Eddy fill a form with their tastes, and we got the follow
 
 What could be the match percentage between Mary and John ?
 
-Answer is simple enough to be part of Fullstack ruby challenges.
+Answer is simple enough to be part of Fullstack ruby challenges.\
 We will take **distances** between each particular tastes, add them together and divide by the **maximum total distance**.
 
 ```
@@ -58,7 +58,7 @@ Create a `Taste` model that will store fruits taste information:
 rails g model Taste apple:integer banana:integer orange:interger strawberry:integer peach:integer user:references
 rails db:migrate
 ```
-Now let's seed our databse with fake users and random tastes.
+Now let's seed our databse with fake users and random tastes.\
 So inside seeds.rb:
 
 ```ruby
@@ -87,11 +87,11 @@ puts "All good"
 ```
 And run `rails db:seed`
 
-## Matching logic in ruby (simple version)
+## Matching logic in ruby
 
 Let's translate our algorithm into ruby code.
 
-We could use a score method in `Taste` model that calculates the match percentage between two taste instances.
+We could use a score method in `Taste` model that calculates the match percentage between two taste instances.\
 So our `Taste` model file will look like:
 
 ```ruby
@@ -115,7 +115,8 @@ class Taste < ApplicationRecord
 end
 ```
 
-Now to compare one particular user to all users from database, and retrieve for instance the top ten matches we could use the following method in `User` model:
+Now to compare one particular user to all users from database, and retrieve for instance the top ten matches,\
+we could use the following method in `User` model:
 
 ```ruby
 #user.rb
@@ -142,11 +143,11 @@ Let's crash test it in `rails console`:
 
 Type in : `User.first.matches(10)`
 
-<img src="/app/assets/images/console-2.png?raw=true" width="1200">
+<img src="/app/assets/images/console.png?raw=true" width="1200">
 
 ## Improving our algorithm accuracy
 
-One way to improve our algorithm could be to apply an arbitrary penalty when the relative distance on a criterion is greater than 2.
+One way to improve our algorithm could be to apply an arbitrary penalty when the relative distance on a criterion is greater than 2.\
 In the same way we can apply a bonus if distance is equal or lower than 2.
 
 In other words, when over 2, lets multiply distances by 1.5, and by 0.5 otherwise.
@@ -165,15 +166,13 @@ Our ruby score method would be modified:
     ].map { |distance| distance > 2 ? distance * 1.5 : distance * 0.5 }
      .sum
 
-    (1 - (total_distance / 25.0) * 100).round(1)
+    ((1 - (total_distance / 25.0)) * 100).round(1)
   end
 ```
 
 ## Better performance with SQL
 
-Matching a very large number of users together could cause some performance issues.
-
-### Query (for the simple version)
+Matching a very large number of users together could cause some performance issues.\
 We could delegate this calculation to the database with the following query:
 
 ```SQL
@@ -200,14 +199,18 @@ We could delegate this calculation to the database with the following query:
 ```
 *Query to retrieve the 10 best matches with the user whose id is 1.*
 
-#### A little explanation may be required
-
 Here SQL queyword `WITH` allow us to create two subqueries named `taste` and `distances`that we can use later in the query.
 - `taste` represents current user taste that we filter with `WHERE` keyword.
 - `distances` computes individual fruit distances between current user tastes and all other tastes records.
 And we use last `SELECT` to compute all matching percentages.
 
-### Testing
+### Testing the query
+
+We can test this query directly on our database using the awesome [blazer gem](https://github.com/ankane/blazer).\
+You can also find more infos about this gem in the DB advanced lecture on Kitt.
+
+<img src="/app/assets/images/blazer.png?raw=true" width="1200">
+
 ### Usage in user model
 
 It is possible to play SQL queries directly on database using `ActiveRecord::Base.connection.execute(query)`.
@@ -246,8 +249,8 @@ It is possible to play SQL queries directly on database using `ActiveRecord::Bas
 
 We can compute the same result as before using results from the database.
 
-### SQL
-And the SQL version should be slightly :fearful: modified using `CASE` `WHEN` statements.
+### Advanced query
+The SQL query for the advanced version should be slightly :fearful: modified using `CASE` `WHEN` statements.
 
 ```ruby
 #user.rb
@@ -298,8 +301,9 @@ And the SQL version should be slightly :fearful: modified using `CASE` `WHEN` st
 
 ## Performance Benchmark
 
-Using [Benchmark module from ruby](https://ruby-doc.org/stdlib-2.5.0/libdoc/benchmark/rdoc/Benchmark.html)
-We can compare the time taken by plain ruby matching and sql.
+Using [Benchmark module from ruby](https://ruby-doc.org/stdlib-2.5.0/libdoc/benchmark/rdoc/Benchmark.html)\
+We can compare the time taken by plain ruby matching and sql.\
+(Test is made with 5000 users)
 
 Let's code a class method in our User model:
 
@@ -322,4 +326,8 @@ matching_with_sql:       0.001510   0.000200   0.001710 (  0.016998)
 ```
 SQL query reduced the time from **366 ms** to **17 ms**,  => ~ **20 times faster** :muscle:
 
+<<<<<<< HEAD
 Happy fruits (or any other more relevant criteria) matching ! :tada: :tada:
+=======
+Happy fruits (or any other more relevant criteria) matching ! :tada:
+>>>>>>> b1204c6ecadafcc39e2dc91bb244627e21e6386e
