@@ -55,7 +55,7 @@ rails new \
 Create a `Taste` model that will store fruits taste information:
 
 ```ruby
-rails g model Taste apple:integer banana:integer orange:interger strawberry:integer peach:integer user:references
+rails g model Taste apple:float banana:float orange:float strawberry:float peach:float user:references
 rails db:migrate
 ```
 Now let's seed our databse with fake users and random tastes.\
