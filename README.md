@@ -1,6 +1,6 @@
 # MATCHING USERS in Rails
 
-This tutorial will detail how to match users on multiple criterias.
+This tutorial will detail how to match users on multiple criterias and how to improve performance with SQL.
 
 ## Matching algorithm
 
