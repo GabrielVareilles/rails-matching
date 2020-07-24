@@ -5,7 +5,7 @@ This tutorial will detail how to match users on multiple criterias.
 ## Matching algorithm 
 
 Lets say we want to match users on their fruits tastes :apple: :banana: :orange: :strawberry: :peach:.\
-Each user taste relative to a fruit will be an integer from 0 to 5.
+Each user taste relative to a fruit will be from 0 to 5.
 
 ### Example
 
@@ -13,9 +13,9 @@ We made Mary, John and Eddy fill a form with their tastes, and we got the follow
 
 | User          | :apple:   | :banana: | :orange: |:strawberry:| :peach:  |
 | ------------- |:---------:|:--------:|:--------:|:----------:|:--------:|
-| Mary         | 3         | 2        |1         |5           |4         |
-| John          | 1         | 4        |3         |4           |5         |
-| Eddy          | 2         | 3        |0         |1           |3         |
+| Mary          | 3.1       | 2.2      |1.0       |5.0         |4.3       |
+| John          | 1.2       | 4.3      |3.0       |4.4         |5.0       |
+| Eddy          | 2.2       | 3.0      |0.2       |1.3         |3.4       |
 
 What could be the match percentage between Mary and John ?
 
@@ -23,16 +23,16 @@ Answer is simple enough to be part of Fullstack ruby challenges.
 We will take **distances** between each particular tastes, add them together and divide by the **maximum total distance**.
 
 ```
-The apple distance between Mary and John is 2 (3 - 1).
+The apple distance between Mary and John is 1.9 (3.1 - 1.2).
 As distances have to be positive values, we use absolute values.
 
 So the total distance between Mary and John is: 
-2 + 2 + 2 + 1 + 1 = 8
+1.9 + 2.1 + 2.0 + 0.6 + 0.7 = 7.3
 
 Since we have 5 different tastes (from 0 to 5) the maximum total distance is 25.
  
 Matching percentage:
-(1 - (8/25)) * 100 => 68 %
+(1 - (7.3/25)) * 100 => 70.8 %
 ```
 
 Time to code !
@@ -58,7 +58,7 @@ Create a `Taste` model that will store fruits taste information:
 rails g model Taste apple:integer banana:integer orange:interger strawberry:integer peach:integer user:references
 rails db:migrate
 ```
-Now let's seed our databse with fake users and random tastes, and we want a lot of them !
+Now let's seed our databse with fake users and random tastes.
 So inside seeds.rb:
 
 ```ruby
@@ -67,29 +67,27 @@ User.destroy_all
 
 puts "Creating users and tastes.."
 
-5000.times do |index|
+100.times do |index|
   user = User.create(
     email: "email-#{index}@taste.com",
     password: 'password'
   )
   Taste.create(
-    apple:      rand(0..5),
-    banana:     rand(0..5),
-    orange:     rand(0..5),
-    strawberry: rand(0..5),
-    peach:      rand(0..5),
+    apple:      rand(0.0..5.0).round(1),
+    banana:     rand(0.0..5.0).round(1),
+    orange:     rand(0.0..5.0).round(1),
+    strawberry: rand(0.0..5.0).round(1),
+    peach:      rand(0.0..5.0).round(1),
     user:       user
   )
-  puts "#{index} users created.." if index % 100 == 0
+  puts "#{index} users created.." if index % 10 == 0
 end
 
 puts "All good"
 ```
 And run `rails db:seed`
 
-(Warning depending on your machine this could take a while ! ~ 5 to 10 min => :coffee: or feel free to change 5000 to any other smaller number)
-
-## Matching logic in ruby
+## Matching logic in ruby (simple version)
 
 Let's translate our algorithm into ruby code.
 
@@ -128,11 +126,11 @@ class User < ApplicationRecord
   ...
 
   def matches(top_n)
-    User.includes(:taste)                                # Dealing with n+1 query..
-        .where.not(id: id)                               # All Users except current instance
-        .map { |user| [user, taste.score(user.taste)] }  # Will look like [ [#<User.....>, 88], [#<User.....>, 60], .... ]
-        .sort_by { |pair| - pair[1] }                    # Sorting by match percentage DESC
-        .first(top_n)                                    # Limiting to the n top results
+    User.includes(:taste)                                # dealing with n+1 query..
+        .where.not(id: id)                               # all Users except current instance
+        .map { |user| [user, taste.score(user.taste)] }  # Will look like [[#<User.....>, 88.2], [#<User.....>, 60.1] ..]
+        .sort_by { |pair| - pair[1] }                    # sorting by match percentage DESC
+        .first(top_n)                                    # limiting to the n top results
   end
   
   ...
@@ -146,11 +144,36 @@ Type in : `User.first.matches(10)`
 
 <img src="/app/assets/images/console-2.png?raw=true" width="1200">
 
+## Improving our algorithm accuracy
+
+One way to improve our algorithm could be to apply an arbitrary penalty when the relative distance on a criterion is greater than 2.
+In the same way we can apply a bonus if distance is equal or lower than 2.
+
+In other words, when over 2, lets multiply distances by 1.5, and by 0.5 otherwise.
+
+### Matching logic in ruby (advanced version)
+Our ruby score method would be modified:
+
+```ruby
+  def score(other_taste)
+    total_distance = [
+      (apple - other_taste.apple).abs,
+      (banana - other_taste.banana).abs,
+      (orange - other_taste.orange).abs,
+      (strawberry - other_taste.strawberry).abs,
+      (peach - other_taste.peach).abs,
+    ].map { |distance| distance > 2 ? distance * 1.5 : distance * 0.5 }
+     .sum
+
+    ((1 - (total_distance / 25.0) * 100).round(1)
+  end
+```
+
 ## Better performance with SQL
 
 Matching a very large number of users together could cause some performance issues.
 
-### Query
+### Query (for the simple version)
 We could delegate this calculation to the database with the following query:
 
 ```SQL
@@ -184,6 +207,7 @@ Here SQL queyword `WITH` allow us to create two subqueries named `taste` and `di
 - `distances` computes individual fruit distances between current user tastes and all other tastes records.
 And we use last `SELECT` to compute all matching percentages.
 
+### Testing
 ### Usage in user model
 
 It is possible to play SQL queries directly on database using `ActiveRecord::Base.connection.execute(query)`.
@@ -208,7 +232,7 @@ It is possible to play SQL queries directly on database using `ActiveRecord::Bas
         FROM taste, tastes
         WHERE tastes.user_id != '#{id}'
       )
-      SELECT users.id, email, CAST((1-(dist1+dist2+dist3+dist4+dist5)/25.0)*100 AS float) as match_percentage
+      SELECT users.id, email, (1-(dist1+dist2+dist3+dist4+dist5)/25.0)*100 as match_percentage
       FROM distances
       JOIN users ON users.id = distances.user_id
       ORDER BY match_percentage DESC
@@ -222,52 +246,6 @@ It is possible to play SQL queries directly on database using `ActiveRecord::Bas
 ```
 
 We can compute the same result as before using results from the database.
-
-## Improving our algorithm accuracy
-
-One way to improve our algorithm could be to apply an arbitrary penalty when the relative distance on a criterion is greater than 2.
-In the same way we can apply a bonus if distance is equal or lower than 2.
-
-In other words, when over 2, lets multiply distances by 1.5, and by 0.5 otherwise.
-
-### Ruby
-Our ruby score method would be modified:
-
-```ruby
-  def score(other_taste)
-    apple_distance = (apple - other_taste.apple).abs
-    banana_distance = (banana - other_taste.banana).abs
-    orange_distance = (orange - other_taste.orange).abs
-    strawberry_distance = (strawberry - other_taste.strawberry).abs
-    peach_distance = (peach - other_taste.peach).abs
-
-    apple_distance *= 0.50 if apple_distance <= 2
-    apple_distance *= 1.50 if apple_distance > 2
-
-    banana_distance *= 0.50 if banana_distance <= 2
-    banana_distance *= 1.50 if banana_distance > 2
-
-    orange_distance *= 0.50 if orange_distance <= 2
-    orange_distance *= 1.50 if orange_distance > 2
-
-    strawberry_distance *= 0.50 if strawberry_distance <= 2
-    strawberry_distance *= 1.50 if strawberry_distance > 2
-
-    peach_distance *= 0.50 if peach_distance <= 2
-    peach_distance *= 1.50 if peach_distance > 2
-
-    (
-      (1 - (
-            apple_distance +
-            banana_distance +
-            orange_distance +
-            strawberry_distance.abs +
-            peach_distance.abs
-          ) / 25.0
-      ) * 100
-    ).round
-  end
-```
 
 ### SQL
 And the SQL version should be slightly :fearful: modified using `CASE` `WHEN` statements.
@@ -305,7 +283,7 @@ And the SQL version should be slightly :fearful: modified using `CASE` `WHEN` st
         FROM taste, tastes
         WHERE tastes.user_id != '#{id}'
       )
-      SELECT users.id, email, CAST((1-(dist1+dist2+dist3+dist4+dist5)/25.0)*100 AS float) as match_percentage
+      SELECT users.id, email, (1-(dist1+dist2+dist3+dist4+dist5)/25.0)*100 as match_percentage
       FROM distances
       JOIN users ON users.id = distances.user_id
       ORDER BY match_percentage DESC
