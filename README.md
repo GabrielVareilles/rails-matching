@@ -336,10 +336,11 @@ SQL query reduced the time from **366 ms** to **17 ms**,  => ~ **20 times faster
 
 ## Going further
 
-This algorithm can work with many more criteria but indeed the code will grow accordingly.\
-Applying weigths to our different criteria can also be done quite easily if necessary.
+- This algorithm can work with many **more criteria** but indeed the code will grow accordingly.\
 
-Last but not least we're not tied to match records from the same table (using polymorphism).\
+- Applying **weigths** to our different criteria can also be done quite easily if necessary.\
+
+- Last but not least we're not tied to match records from the same table, we can use **polymorphism**.\
 In our above exemple we could have a salads and try to match users and fruit salads.
 
 <img src="/app/assets/images/schema-2.png?raw=true" width="400">
