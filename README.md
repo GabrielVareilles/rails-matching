@@ -340,7 +340,7 @@ SQL query reduced the time from **366 ms** to **17 ms**,  => ~ **20 times faster
 
 - Applying **weigths** to our different criteria can also be done quite easily if necessary.
 
-- Last but not least we're not tied to match records from the same table, we can use **polymorphism**.
+- Last but not least we're not tied to match records from the same table, we can use **[polymorphism](https://culttt.com/2016/01/13/creating-polymorphic-relationships-in-ruby-on-rails/?utm_source=lewagon.com)**.
    <img src="/app/assets/images/schema-2.png?raw=true" width="400">
    
 *For instance, we could have tried to match users and fruit salads*
