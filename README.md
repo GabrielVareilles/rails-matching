@@ -112,7 +112,7 @@ class Taste < ApplicationRecord
             (peach - other_taste.peach).abs
           ) / 25.0
       ) * 100
-    ).round
+    ).round(1)
   end
 end
 ```
