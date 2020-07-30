@@ -24,12 +24,11 @@ We will take **distances** between each particular tastes, add them together and
 
 ```
 The apple distance between Mary and John is 1.9 (3.1 - 1.2).
-As distances have to be positive values, we use absolute values.
 
-So the total distance between Mary and John is:
+Total distance is (using absolute values):
 1.9 + 2.1 + 2.0 + 0.6 + 0.7 = 7.3
 
-Since we have 5 different tastes (from 0 to 5) the maximum total distance is 25.
+We have 5 different tastes (from 0 to 5), so the maximum total distance is 25.
 
 Matching percentage:
 (1 - (7.3/25)) * 100 => 70.8 %
