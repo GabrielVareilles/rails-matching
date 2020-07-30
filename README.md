@@ -196,7 +196,7 @@ So we could delegate that calculation to the database with the following query:
         FROM taste, tastes
         WHERE tastes.user_id != 1
       )
-      SELECT id, email, CAST((1-(dist1+dist2+dist3+dist4+dist5)/25.0)*100 AS float) as match_percentage
+      SELECT id, email, (1-(dist1+dist2+dist3+dist4+dist5)/25.0)*100 as match_percentage
       FROM distances
       JOIN users ON users.id = distances.user_id
       ORDER BY match_percentage DESC
